@@ -15,19 +15,19 @@ function initial_setup() {
   echo "           FULL INSTALLATION & SETUP             "
   echo "================================================="
   read -p "Enter Gateway IP (Pi's IP) [Default: 192.168.50.1]: " GATEWAY_IP
-  GATEWAY_IP=${GATEWAY_IP:-192.168.50.1} 
+  GATEWAY_IP=${GATEWAY_IP:-192.168.50.1}
 
   read -p "Enter PC IP (DHCP assignment) [Default: 192.168.50.10]: " PC_IP
   PC_IP=${PC_IP:-192.168.50.10}
 
   read -p "Enter ports to forward (comma separated) [Default: 80,8080]: " FORWARD_PORTS
-  FORWARD_PORTS=${FORWARD_PORTS:-80,8080} 
+  FORWARD_PORTS=${FORWARD_PORTS:-80,8080}
 
   echo "---------------------------------"
   echo "Updating system and installing packages..."
   export DEBIAN_FRONTEND=noninteractive
   apt update
-  apt install -y openvpn dnsmasq network-manager iptables-persistent netfilter-persistent resolvconf 
+  apt install -y openvpn dnsmasq network-manager iptables-persistent netfilter-persistent resolvconf
 
   echo "Configuring Ethernet (eth0) with NetworkManager..."
   nmcli con delete eth0-local 2>/dev/null || true
@@ -78,7 +78,7 @@ EOF
 function manage_ports() {
   clear
   echo "================================================="
-  echo "           CHANGE PORT FORWARDING                "
+  echo "            CHANGE PORT FORWARDING               "
   echo "================================================="
   read -p "Enter new ports (comma separated, e.g., 80,8080): " NEW_PORTS
   if [ -z "$NEW_PORTS" ]; then
@@ -113,12 +113,12 @@ function manage_ports() {
 }
 
 # ==========================================
-# FUNCTION: OPENVPN AUTH MANAGEMENT
+# FUNCTION: OPENVPN AUTH MANAGEMENT  
 # ==========================================
 function toggle_auth() {
   clear
   echo "================================================="
-  echo "           OPENVPN AUTO-LOGIN                    "
+  echo "            OPENVPN AUTO-LOGIN                   "
   echo "================================================="
   if [ -f "/etc/openvpn/client/auth.txt" ]; then
       rm -f /etc/openvpn/client/auth.txt
@@ -141,7 +141,7 @@ EOF
 }
 
 # ==========================================
-# FUNCTION: AUTO WIFI MANAGEMENT
+# FUNCTION: AUTO WIFI MANAGEMENT 
 # ==========================================
 function toggle_wifi() {
   clear
@@ -210,7 +210,7 @@ EOF
 }
 
 # ==========================================
-# MAIN MENU LOOP
+# MAIN MENU LOOP 
 # ==========================================
 while true; do
   clear
@@ -248,7 +248,7 @@ while true; do
     5)
       clear
       echo "================================================="
-      echo "              FINAL MANUAL STEPS                 "
+      echo "               FINAL MANUAL STEPS                "
       echo "================================================="
       echo "Once you have run the initial setup (Option 1), you need to:"
       echo "1. Copy your router's .ovpn file to the directory:"
