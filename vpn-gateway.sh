@@ -18,7 +18,7 @@ function initial_setup() {
   GATEWAY_IP=${GATEWAY_IP:-192.168.50.1}
 
   read -p "Enter PC IP (DHCP assignment) [Default: 192.168.50.10]: " PC_IP
-  PC_IP=${PC_IP:-192.168.50.10}
+  PC_IP=${PC_IP:-192.168.50.10} 
 
   read -p "Enter ports to forward (comma separated) [Default: 80,8080]: " FORWARD_PORTS
   FORWARD_PORTS=${FORWARD_PORTS:-80,8080}
