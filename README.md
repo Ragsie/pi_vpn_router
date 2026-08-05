@@ -38,8 +38,8 @@ tun0 (VPN): The secure tunnel created by OpenVPN.
 git clone https://github.com/Ragsie/pi_vpn_router.git
 cd pi_vpn_router
 ```
-2. Run to make the scripts executable:```sudo chmod +x setup.sh manage.sh``` 
-3. Run the setup script as root: ```sudo ./setup.sh```
+2. Run to make the scripts executable:```sudo chmod +x vpn-gateway.sh``` 
+3. Run the setup script as root: ```sudo ./vpn-gateway.sh```
 4. follow instructions of the script.
 
 # ⚙️ Post-Installation (Adding your VPN Profile)
