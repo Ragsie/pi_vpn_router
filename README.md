@@ -17,9 +17,9 @@ OpenVPN Auto-Authentication: Securely generate and store your OpenVPN credential
 Interactive Management: Includes a manage.sh script with a CLI menu to easily toggle features or update port forwarding rules on the fly.
 
 ## 🛠️ Prerequisites
-Hardware: A Raspberry Pi (with both WiFi and an Ethernet port) and an Ethernet cable connecting it to your PC.
+Hardware: A Raspberry Pi or Equal other boards(with both WiFi and an Ethernet port) and an Ethernet cable connecting it to your PC.
 
-OS: Debian Trixie (or a recent Raspberry Pi OS / Ubuntu Server).
+OS: Debian Trixie (or a recent Raspberry Pi OS).
 
 Network Topology:
 
