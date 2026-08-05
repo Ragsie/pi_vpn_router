@@ -49,23 +49,12 @@ Resilience: Because it is designed to run headless, if the WiFi drops or the Pi 
 4. Add your Openvpn config file. the extension must be .conf here ```sudo nano /etc/openvpn/client/openvpn-config-file.conf``` (```openvpn-config-file```can be changed to your own file name ```.conf``` must stay).
 
 # Options
-### auto login
-If not setup under installation 
-Setting up the OpenVPN Files For the Pi to log in automatically at boot, the files must be placed in /etc/openvpn/client/.
+use mangager.sh to:
 
-Create the Authentication File: ```sudo nano /etc/openvpn/client/auth.txt```
+### change port(s)
+### open wifi logon
 
-Write your username on the first line and your password on the second line:
-```
-your_username
-
-your_password
-```
-
-Save and exit (CTRL+O Enter CTRL+X)
-
-Set permissions so only root can read the password: ```sudo chmod 600 /etc/openvpn/client/auth.txt```
-
+### auto vpnlogon
 Adjust openvpn-config-file.conf File:
 
 ```sudo nano /etc/openvpn/client/openvpn-config-file.conf```
