@@ -94,6 +94,8 @@ Because the strict Kill Switch drops all non-VPN traffic, your PC will not be ab
 
 Workaround: Connect your smartphone to the hotel WiFi, accept the terms, and then clone your phone's MAC address to the Raspberry Pi's wlan0 interface.
 
+### bug's
+none knowen please report bugs if found
 
 ### buy me a cup of coffie
 I have used alot of time on this project.
