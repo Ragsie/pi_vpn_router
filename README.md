@@ -1,65 +1,55 @@
-# pi_vpn_router
-
-## The script automates the complex network configuration required to turn a Raspberry pi into a routing gateway. Here is the step-by-step process:
-
-Installs the Core Tools: It downloads and installs the necessary software: openvpn (for the VPN connection), dnsmasq (to act as a DHCP server), network-manager (to handle network interfaces), and iptables-persistent (to save your firewall rules so they survive a reboot).
-
-Configures the Ethernet Port (eth0): It detaches the physical Ethernet port from its default automatic settings and assigns it a static, permanent IP address (192.168.50.1). This makes the Pi act as the "router" for that specific cable connection.
-
-Sets up a Local Network (DHCP): It configures dnsmasq to listen on the Ethernet port. When you plug your PC into the Pi, dnsmasq automatically assigns the PC the IP address 192.168.50.10 and tells the PC to use the Pi as its gateway and DNS server.
-
-Enables Kernel IP Forwarding: By default, Linux devices only care about network traffic destined for themselves. The script changes a core kernel setting (net.ipv4.ip_forward=1) that allows the Pi to act as a middleman, passing traffic from one network interface to another.
-
-Builds the Firewall (iptables): This is the most critical part of the script. It creates strict traffic rules:
-
-The Kill Switch: It explicitly allows traffic from your PC (eth0) to go out through the VPN tunnel (tun0), but actively blocks (drops) any traffic trying to go directly out through the WiFi (wlan0). If the VPN drops, the PC loses internet entirely, preventing accidental data leaks.
-
-NAT (Masquerade): It hides the PC's local IP address (192.168.50.10) behind the Pi's VPN IP address. The Asus router and the internet will only see the Pi's IP.
-
-Port Forwarding: It creates a set of rules stating: "If anyone on the VPN network tries to access port 80 or 8080 on the Pi, immediately forward that request through the Ethernet cable to the PC on 192.168.50.10."
 
 
-# The Final Result:
+# Headless Raspberry Pi VPN Gateway
+Transforms a Raspberry Pi into a fully automated, plug-and-play VPN gateway for a connected PC. It routes all traffic from the PC through an OpenVPN tunnel and features a strict hardware-level kill switch.
 
-Once the script has run and your OpenVPN configuration is active, you will have a highly secure, automated Headless VPN Gateway.
+This setup is ideal for traveling, working from hotels, or maintaining a secure connection on untrusted networks without needing to interact with the Pi after the initial setup.
 
-## Here is how the final architecture works in practice:
+## ✨ Features
+Strict Kill Switch (iptables): If the VPN tunnel drops, all internet traffic from the PC is immediately blocked. No data leaks.
 
-Plug-and-Play Security: You power on the Raspberry Pi. It automatically connects to the local WiFi and establishes a secure OpenVPN tunnel to your Asus router at home.
+Auto-Connect to Open WiFi: An optional background service automatically scans for and connects to the strongest open (unsecured) WiFi network available.
 
-Isolated PC Environment: When you plug your PC into the Pi's RJ45 Ethernet port, the PC instantly gets an internet connection. However, this connection is 100% tunneled through your home network. The PC has no direct access to the local WiFi network the Pi is connected to.
+Dynamic Port Forwarding: Easily forward specific ports through the VPN tunnel to your connected PC.
 
-Leak Protection: Because of the kill switch and the update-resolv-conf DNS settings, neither the PC nor the Pi will leak your DNS requests or real IP address to the local WiFi provider.
+OpenVPN Auto-Authentication: Securely generate and store your OpenVPN credentials (chmod 600) for seamless, unattended reboots.
 
-Two-Way Accessibility:
+Interactive Management: Includes a manage.sh script with a CLI menu to easily toggle features or update port forwarding rules on the fly.
 
-Your PC can browse the internet and access all devices on your home network just as if it were physically plugged into the Asus router.
+## 🛠️ Prerequisites
+Hardware: A Raspberry Pi (with both WiFi and an Ethernet port) and an Ethernet cable connecting it to your PC.
 
-You (or any device on your home network) can type the Pi's VPN IP address into a browser, and the Pi will seamlessly forward you to the web server/services running on ports 80 and 8080 on your connected PC.
+OS: Debian Trixie (or a recent Raspberry Pi OS / Ubuntu Server).
 
-Resilience: Because it is designed to run headless, if the WiFi drops or the Pi loses power, it will automatically try to re-establish the WiFi connection and rebuild the VPN tunnel without requiring a monitor, keyboard, or any user input.
+Network Topology:
+
+wlan0 (WiFi): Connects to the internet.
+
+eth0 (Ethernet): Connects to your PC (provides a local DHCP IP).
+
+tun0 (VPN): The secure tunnel created by OpenVPN.
 
 
-# Installation Guide
+# 🚀 Installation
 ### Step-by-Step Instructions
 
-1. Create the file on your Pi, for example with nano ```sudo nano vpn-router-setup.sh``` copy the script and insert it save and exit (CTRL+O, Enter CTRL+X)
-2. Make the script executable and run it: ```chmod +x vpn-router-setup.sh```, ```sudo ./vpn-router-setup.sh```.
-3. follow instructions of the script
-4. Add your Openvpn config file. the extension must be .conf here ```sudo nano /etc/openvpn/client/openvpn-config-file.conf``` (```openvpn-config-file```can be changed to your own file name ```.conf``` must stay).
+1. Clone this repository to your Raspberry Pi:
+```
+git clone https://github.com/Ragsie/pi_vpn_router.git
+cd pi_vpn_router
+```
+2. Run to make the scripts executable:```sudo chmod +x setup.sh manage.sh``` 
+3. Run the setup script as root: ```sudo ./setup.sh```
+4. follow instructions of the script.
 
-# Options
-use mangager.sh to:
+# ⚙️ Post-Installation (Adding your VPN Profile)
+Once the setup script finishes, you need to provide your OpenVPN configuration file (e.g., from your Asus router or VPN provider):
 
-### change port(s)
-### open wifi logon
+1. Copy your .ovpn file to the OpenVPN client directory and rename it to Your-VPN-File.conf: ```sudo cp your-profile.ovpn /etc/openvpn/client/Your-VPN-File.conf```
+2. Do only this step If you chose to set up the auto-login file during setup.sh, edit the Your-VPN-File.conf file to point to it. Run ```sudo nano /etc/openvpn/client/Your-VPN-File.conf``` Find the auth-user-pass line and change it to:```auth-user-pass auth.txt``` save and exit (Ctr+O, Enter, Ctrl+X)
+3. Enable and start the OpenVPN service: ```sudo systemctl enable --now openvpn-client@asus```
 
-### auto vpnlogon
-Adjust openvpn-config-file.conf File:
-
-```sudo nano /etc/openvpn/client/openvpn-config-file.conf```
-Add  ```auth-user-pass auth.txt``` see example below
-## example
+### example for step 2
 
 ```
 client
@@ -82,4 +72,24 @@ auth-user-pass auth.txt  # add here
 <ca>
 -----BEGIN CERTIFICATE-----
 ```
-Save and Exit (CTRL+O Enter CTRL+X)
+
+
+# 🧰 The Management Menu
+Need to change an open port or turn off the Auto-WiFi feature later? Simply run the management script:
+
+```sudo ./manage.sh```
+Menu Options:
+
+1. Change Port Forwarding: Automatically detects your PC's IP and applies new iptables NAT rules.
+
+2. Toggle OpenVPN Auto-login: Create or delete your auth.txt credentials file.
+
+3. Toggle Auto-Connect to Open WiFi: Installs or completely removes the background systemd timer for WiFi hunting.
+
+
+# ⚠️ Known Limitations: Captive Portals
+The Auto-Connect to Open WiFi feature works perfectly on truly open networks. However, many hotels and cafes use "Captive Portals" (a webpage where you must click "Accept Terms" before getting internet access).
+
+Because the strict Kill Switch drops all non-VPN traffic, your PC will not be able to load the Captive Portal page.
+
+Workaround: Connect your smartphone to the hotel WiFi, accept the terms, and then clone your phone's MAC address to the Raspberry Pi's wlan0 interface.
