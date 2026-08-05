@@ -93,3 +93,11 @@ The Auto-Connect to Open WiFi feature works perfectly on truly open networks. Ho
 Because the strict Kill Switch drops all non-VPN traffic, your PC will not be able to load the Captive Portal page.
 
 Workaround: Connect your smartphone to the hotel WiFi, accept the terms, and then clone your phone's MAC address to the Raspberry Pi's wlan0 interface.
+
+
+### buy me a cup of coffie
+I have used alot of time on this project.
+
+<img width="237" height="205" alt="image" src="https://github.com/user-attachments/assets/c13ef40b-aca1-45da-8473-332744b63b28" />
+
+bitcoincash:qzp4c7klef8q6gxycvc84dx0fnhnfxkkpy6xda56h3
