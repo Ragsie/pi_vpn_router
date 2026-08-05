@@ -1,4 +1,4 @@
-
+# ⚠️Beta single do it all script⚠️
 
 # Headless Raspberry Pi VPN Gateway
 Transforms a Raspberry Pi into a fully automated, plug-and-play VPN gateway for a connected PC. It routes all traffic from the PC through an OpenVPN tunnel and features a strict hardware-level kill switch.
@@ -35,11 +35,11 @@ tun0 (VPN): The secure tunnel created by OpenVPN.
 
 1. Clone this repository to your Raspberry Pi:
 ```
-git clone https://github.com/Ragsie/pi_vpn_router.git --branch [main] --single-branch
+git clone https://github.com/Ragsie/pi_vpn_router.git --branch [beta] --single-branch
 cd pi_vpn_router
 ```
-2. Run to make the scripts executable:```sudo chmod +x setup.sh manage.sh``` 
-3. Run the setup script as root: ```sudo ./setup.sh```
+2. Run to make the scripts executable:```sudo chmod +x vpn-gateway.sh``` 
+3. Run the setup script as root: ```sudo ./vpn-gateway.sh```
 4. follow instructions of the script.
 
 # ⚙️ Post-Installation (Adding your VPN Profile)
