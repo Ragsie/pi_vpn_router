@@ -15,19 +15,19 @@ function initial_setup() {
   echo "           FULL INSTALLATION & SETUP             "
   echo "================================================="
   read -p "Enter Gateway IP (Pi's IP) [Default: 192.168.50.1]: " GATEWAY_IP
-  GATEWAY_IP=${GATEWAY_IP:-192.168.50.1}
+  GATEWAY_IP=${GATEWAY_IP:-192.168.50.1} 
 
   read -p "Enter PC IP (DHCP assignment) [Default: 192.168.50.10]: " PC_IP
   PC_IP=${PC_IP:-192.168.50.10}
 
   read -p "Enter ports to forward (comma separated) [Default: 80,8080]: " FORWARD_PORTS
-  FORWARD_PORTS=${FORWARD_PORTS:-80,8080}
+  FORWARD_PORTS=${FORWARD_PORTS:-80,8080} 
 
   echo "---------------------------------"
   echo "Updating system and installing packages..."
   export DEBIAN_FRONTEND=noninteractive
   apt update
-  apt install -y openvpn dnsmasq network-manager iptables-persistent netfilter-persistent resolvconf
+  apt install -y openvpn dnsmasq network-manager iptables-persistent netfilter-persistent resolvconf 
 
   echo "Configuring Ethernet (eth0) with NetworkManager..."
   nmcli con delete eth0-local 2>/dev/null || true
