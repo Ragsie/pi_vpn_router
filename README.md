@@ -1,4 +1,4 @@
-# ⚠️Beta single do it all script⚠️
+
 
 # Headless Raspberry Pi VPN Gateway
 Transforms a Raspberry Pi into a fully automated, plug-and-play VPN gateway for a connected PC. It routes all traffic from the PC through an OpenVPN tunnel and features a strict hardware-level kill switch.
