@@ -73,7 +73,7 @@ EOF
 }
 
 # ==========================================
-# FUNCTION: MANAGE PORTS
+# FUNCTION: MANAGE PORTS                   
 # ==========================================
 function manage_ports() {
   clear
