@@ -35,7 +35,7 @@ tun0 (VPN): The secure tunnel created by OpenVPN.
 
 1. Clone this repository to your Raspberry Pi:
 ```
-git clone https://github.com/Ragsie/pi_vpn_router.git
+git clone https://github.com/Ragsie/pi_vpn_router.git --branch [main] --single-branch
 cd pi_vpn_router
 ```
 2. Run to make the scripts executable:```sudo chmod +x setup.sh manage.sh``` 
