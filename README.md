@@ -29,6 +29,31 @@ eth0 (Ethernet): Connects to your PC (provides a local DHCP IP).
 
 tun0 (VPN): The secure tunnel created by OpenVPN.
 
+```
+[ Public / Unsecure WiFi ] 
+           (Hotel, Café)
+                 │
+                 ▼
+          [ wlan0 ] (Pi's WiFi Receives unencrypted internet)
+ ┌─────────────────────────────────────────────────────────────┐
+ │                    RASPBERRY PI (VPN GATEWAY)               │
+ │                                                             │
+ │  [ OpenVPN Client (tun0) ] ◄══════ ENCRYPTED TUNNEL ════════╬══► [ YOUR VPN HOST]
+ │             ▲                                               │             │
+ │             │ (iptables Kill Switch & Port Forwarding)      │             ▼
+ │             ▼                                               │    [If self-hosted VPN server ]
+ |                                                             |      [Home/office & Internet ]
+ │      [ eth0 (LAN) ]                                         │      (E.g Media server)
+ │      IP: x.x.x.x                                            │
+ └─────────────┬───────────────────────────────────────────────┘
+               │ 
+          (Lan Cable)
+               │
+               ▼
+        [ Your Laptop / PC ]
+        IP: x.x.x.x (Assigned by DHCP/dnsmasq)
+````
+
 
 # 🚀 Installation
 ### Step-by-Step Instructions
