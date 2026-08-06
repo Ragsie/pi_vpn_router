@@ -17,8 +17,28 @@ function initial_setup() {
   read -p "Enter Gateway IP (Pi's IP) [Default: 192.168.50.1]: " GATEWAY_IP
   GATEWAY_IP=${GATEWAY_IP:-192.168.50.1}
 
-  read -p "Enter PC IP (DHCP assignment) [Default: 192.168.50.10]: " PC_IP
-  PC_IP=${PC_IP:-192.168.50.10}
+  echo "---------------------------------"
+  echo "Select Network Mode:"
+  echo "1) Single PC directly connected"
+  echo "2) Network Switch (Multiple devices connected)"
+  read -p "Choice [Default: 1]: " NET_MODE
+  NET_MODE=${NET_MODE:-1}
+
+  if [ "$NET_MODE" == "2" ]; then
+      read -p "Enter DHCP Start IP [Default: 192.168.50.10]: " DHCP_START
+      DHCP_START=${DHCP_START:-192.168.50.10}
+      read -p "Enter DHCP End IP [Default: 192.168.50.50]: " DHCP_END
+      DHCP_END=${DHCP_END:-192.168.50.50}
+      DHCP_RANGE="$DHCP_START,$DHCP_END"
+      
+      echo "---------------------------------"
+      read -p "Enter Target IP for Port Forwarding (e.g., your PC/Server) [Default: $DHCP_START]: " TARGET_IP
+      TARGET_IP=${TARGET_IP:-$DHCP_START}
+  else
+      read -p "Enter PC IP (DHCP assignment) [Default: 192.168.50.10]: " TARGET_IP
+      TARGET_IP=${TARGET_IP:-192.168.50.10}
+      DHCP_RANGE="$TARGET_IP,$TARGET_IP"
+  fi
 
   read -p "Enter ports to forward (comma separated) [Default: 80,8080]: " FORWARD_PORTS
   FORWARD_PORTS=${FORWARD_PORTS:-80,8080}
@@ -41,7 +61,7 @@ function initial_setup() {
   echo "Configuring DHCP (dnsmasq)..."
   cat <<EOF > /etc/dnsmasq.conf
 interface=eth0
-dhcp-range=$PC_IP,$PC_IP,255.255.255.0,24h
+dhcp-range=$DHCP_RANGE,255.255.255.0,24h
 dhcp-option=3,$GATEWAY_IP
 dhcp-option=6,$GATEWAY_IP
 EOF
@@ -59,9 +79,9 @@ EOF
   IFS=',' read -ra PORT_ARRAY <<< "$FORWARD_PORTS"
   for PORT in "${PORT_ARRAY[@]}"; do
     PORT=$(echo "$PORT" | xargs)
-    iptables -t nat -A PREROUTING -i tun0 -p tcp -m tcp --dport $PORT -j DNAT --to-destination $PC_IP:$PORT
+    iptables -t nat -A PREROUTING -i tun0 -p tcp -m tcp --dport $PORT -j DNAT --to-destination $TARGET_IP:$PORT
   done
-  iptables -A FORWARD -d $PC_IP/32 -i tun0 -o eth0 -p tcp -m multiport --dports $FORWARD_PORTS -j ACCEPT
+  iptables -A FORWARD -d $TARGET_IP/32 -i tun0 -o eth0 -p tcp -m multiport --dports $FORWARD_PORTS -j ACCEPT
 
   netfilter-persistent save >/dev/null 2>&1
   
@@ -73,12 +93,12 @@ EOF
 }
 
 # ==========================================
-# FUNCTION: MANAGE PORTS                   
+# FUNCTION: MANAGE PORTS
 # ==========================================
 function manage_ports() {
   clear
   echo "================================================="
-  echo "            CHANGE PORT FORWARDING               "
+  echo "           CHANGE PORT FORWARDING                "
   echo "================================================="
   read -p "Enter new ports (comma separated, e.g., 80,8080): " NEW_PORTS
   if [ -z "$NEW_PORTS" ]; then
@@ -87,12 +107,10 @@ function manage_ports() {
       return
   fi
 
-  PC_IP=$(grep '^dhcp-range=' /etc/dnsmasq.conf 2>/dev/null | awk -F'[=,]' '{print $2}')
-  if [ -z "$PC_IP" ]; then
-      read -p "Could not find PC IP automatically. Enter PC IP: " PC_IP
-  fi
+  read -p "Enter Target IP for Port Forwarding [Default: 192.168.50.10]: " TARGET_IP
+  TARGET_IP=${TARGET_IP:-192.168.50.10}
 
-  echo "Updating firewall rules for ports: $NEW_PORTS (Forwarding to $PC_IP)..."
+  echo "Updating firewall rules for ports: $NEW_PORTS (Forwarding to $TARGET_IP)..."
   iptables -F
   iptables -t nat -F
   iptables -P FORWARD DROP
@@ -103,9 +121,9 @@ function manage_ports() {
   IFS=',' read -ra PORT_ARRAY <<< "$NEW_PORTS"
   for PORT in "${PORT_ARRAY[@]}"; do
     PORT=$(echo "$PORT" | xargs)
-    iptables -t nat -A PREROUTING -i tun0 -p tcp -m tcp --dport $PORT -j DNAT --to-destination $PC_IP:$PORT
+    iptables -t nat -A PREROUTING -i tun0 -p tcp -m tcp --dport $PORT -j DNAT --to-destination $TARGET_IP:$PORT
   done
-  iptables -A FORWARD -d $PC_IP/32 -i tun0 -o eth0 -p tcp -m multiport --dports $NEW_PORTS -j ACCEPT
+  iptables -A FORWARD -d $TARGET_IP/32 -i tun0 -o eth0 -p tcp -m multiport --dports $NEW_PORTS -j ACCEPT
 
   netfilter-persistent save >/dev/null 2>&1
   echo "Ports updated successfully!"
@@ -113,12 +131,12 @@ function manage_ports() {
 }
 
 # ==========================================
-# FUNCTION: OPENVPN AUTH MANAGEMENT  
+# FUNCTION: OPENVPN AUTH MANAGEMENT
 # ==========================================
 function toggle_auth() {
   clear
   echo "================================================="
-  echo "            OPENVPN AUTO-LOGIN                   "
+  echo "           OPENVPN AUTO-LOGIN                    "
   echo "================================================="
   if [ -f "/etc/openvpn/client/auth.txt" ]; then
       rm -f /etc/openvpn/client/auth.txt
@@ -141,7 +159,7 @@ EOF
 }
 
 # ==========================================
-# FUNCTION: AUTO WIFI MANAGEMENT 
+# FUNCTION: AUTO WIFI MANAGEMENT
 # ==========================================
 function toggle_wifi() {
   clear
@@ -210,7 +228,7 @@ EOF
 }
 
 # ==========================================
-# MAIN MENU LOOP 
+# MAIN MENU LOOP
 # ==========================================
 while true; do
   clear
@@ -248,7 +266,7 @@ while true; do
     5)
       clear
       echo "================================================="
-      echo "               FINAL MANUAL STEPS                "
+      echo "              FINAL MANUAL STEPS                 "
       echo "================================================="
       echo "Once you have run the initial setup (Option 1), you need to:"
       echo "1. Copy your router's .ovpn file to the directory:"
