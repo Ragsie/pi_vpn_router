@@ -122,7 +122,7 @@ Workaround: Connect your smartphone to the hotel WiFi, accept the terms, and the
 ### bug's
 none knowen please report bugs if found
 
-### buy me a cup of coffie
+
 ### buy me a cup of coffie
 It would make my day and support me develop more
 | Coin | QR | Address |
